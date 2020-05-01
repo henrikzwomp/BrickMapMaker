@@ -17,6 +17,9 @@ namespace BrickMapMaker
 
             var square_size = 12;
 
+            var sub_part_max_x = 48;
+            var sub_part_max_z = 32;
+
             var image = Image.FromFile("source_map.png");
             var bitmap = new Bitmap(image);
 
@@ -27,15 +30,15 @@ namespace BrickMapMaker
             Console.WriteLine("Output Y/Z: " + squaresZ);
 
             Console.WriteLine("Parsing input image and creating Output squares...");
-            var output = ImageToSquares.Go(square_size, squaresX, squaresZ, bitmap);
-            Console.WriteLine("Squares: " + output.Count);
+            var map_squares = ImageToSquares.Go(square_size, squaresX, squaresZ, bitmap);
+            Console.WriteLine("Squares: " + map_squares.Count);
 
             Console.WriteLine("Creating preview image...");
-            SquaresToImage.CreatePreviewImage(squaresX, squaresZ, output);
+            SquaresToImage.CreatePreviewImage(squaresX, squaresZ, map_squares);
 
             Console.WriteLine("Creating brick list...");
             var s2b = new SquaresToBrickMaps(brick_repo);
-            var bricks = s2b.ParseList(squaresX, squaresZ, output);
+            var bricks = s2b.ParseList(squaresX, squaresZ, sub_part_max_x, sub_part_max_z, map_squares);
             Console.WriteLine("Bricks: " + bricks.Count);
 
             Console.WriteLine("Creating Lxfml file...");
@@ -56,9 +59,19 @@ namespace BrickMapMaker
                 bricks.Append(item.ToXml() + Environment.NewLine);
             }
 
+            var groups = new StringBuilder();
+
+            foreach (var group_id in input.Select(x => x.GroupId).Distinct())
+            {
+                groups.Append("<Group transformation=\"1,0,0,0,1,0,0,0,1,0,0,0\" pivot=\"0, 0, 0\" partRefs =\"");
+                groups.Append(string.Join(",", input.Where(x => x.GroupId == group_id).Select(x => x.RefId).ToArray()));
+                groups.AppendLine("\"/>");
+            }
+
             string file_data = File.ReadAllText("empty.LXFML");
 
             file_data = file_data.Replace("[Bricks Here]", bricks.ToString());
+            file_data = file_data.Replace("[Groups Here]", groups.ToString());
 
             File.WriteAllText("map.LXFML", file_data);
         }

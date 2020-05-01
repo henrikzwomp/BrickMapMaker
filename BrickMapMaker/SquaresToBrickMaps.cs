@@ -15,75 +15,96 @@ namespace BrickMapMaker
             _brick_repo = brick_repo;
         }
 
-        public List<Brick> ParseList(int squaresX, int squaresZ, List<SquareTypes> input)
+        public List<Brick> ParseList(int squaresX, int squaresZ, 
+            int sub_part_max_x, int sub_part_max_z,
+            List<MapSquare> map_squares)
         {
             var result = new List<Brick>();
 
-            var map = CreateMapFromList(squaresX, squaresZ, input);
+            var maps = CreateMapsFromInput(squaresX, squaresZ, sub_part_max_x, sub_part_max_z, map_squares);
 
-            var counter = 0;
+            var ref_counter = 0;
+            var group_counter = 0;
 
-            foreach (SquareTypes current_type in (SquareTypes[])Enum.GetValues(typeof(SquareTypes)))
+
+            foreach(var map in maps)
             {
-                var material_id = MapConfig.GetMaterialId(current_type);
-
-                var brick_sizes = _brick_repo.GetBrickSizesForMaterialId(material_id);
-
-                foreach (var brick_size in brick_sizes)
+                foreach (SquareTypes current_type in (SquareTypes[])Enum.GetValues(typeof(SquareTypes)))
                 {
-                    for (int z = 0; z < squaresZ; z++)
+                    var material_id = MapConfig.GetMaterialId(current_type);
+
+                    var brick_sizes = _brick_repo.GetBrickSizesForMaterialId(material_id);
+
+                    foreach (var brick_size in brick_sizes)
                     {
-                        for (int x = 0; x < squaresX; x++)
+                        for (int z = 0; z < map.GetLength(1); z++)
                         {
-                            if (map[x, z] == SquareTypes.Ignore)
-                                continue;
-
-                            if (map[x, z] != current_type)
-                                continue;
-
-                            if (DoesBrickFitOnMap(current_type, map, x, z, brick_size.SizeX, brick_size.SizeZ))
+                            for (int x = 0; x < map.GetLength(0); x++)
                             {
-                                var new_brick = _brick_repo.GetBrick(brick_size, material_id, counter, x, z);
-                                counter++;
+                                var map_square = map[x, z];
 
-                                result.Add(new_brick);
+                                if (map_square.Type == SquareTypes.Ignore)
+                                    continue;
 
-                                ClearAreaOfMap(map, x, z, brick_size.SizeX, brick_size.SizeZ);
+                                if (map_square.Type != current_type)
+                                    continue;
+
+                                if (DoesBrickFitOnMap(current_type, map, x, z, brick_size.SizeX, brick_size.SizeZ))
+                                {
+                                    var new_brick = _brick_repo.GetBrick(brick_size, material_id, ref_counter, map_square.PositionX, map_square.PositionZ);
+                                    new_brick.GroupId = group_counter;
+                                    ref_counter++;
+
+                                    result.Add(new_brick);
+
+                                    ClearAreaOfMap(map, x, z, brick_size.SizeX, brick_size.SizeZ);
+                                }
                             }
                         }
                     }
                 }
+                group_counter++;
             }
-
-            
 
             return result;
         }
 
-        private SquareTypes[,] CreateMapFromList(int squaresX, int squaresZ, List<SquareTypes> result)
+        private List<MapSquare[,]> CreateMapsFromInput(int squares_x, int squares_z,
+            int sub_part_max_x, int sub_part_max_z, List<MapSquare> map_squares)
         {
-            var map = new SquareTypes[squaresX, squaresZ];
+            var result = new List<MapSquare[,]>();
 
-            int x = 0;
-            int z = 0;
-
-            foreach (var square in result)
+            for (var start_x = 0; start_x < squares_x; start_x += sub_part_max_x)
             {
-                map[x, z] = square;
-
-                x++;
-
-                if (x >= squaresX)
+                for (var start_z = 0; start_z < squares_z; start_z += sub_part_max_z)
                 {
-                    z++;
-                    x = 0;
+                    var sub_part_x = sub_part_max_x;
+                    var sub_part_z = sub_part_max_z;
+
+                    if (start_x + sub_part_x > squares_x)
+                        sub_part_x = squares_x - start_x;
+
+                    if (start_z + sub_part_z > squares_z)
+                        sub_part_z = squares_z - start_z;
+
+                    var map = new MapSquare[sub_part_x, sub_part_z];
+
+                    foreach (var square in map_squares.Where(x =>
+                    x.PositionX >= start_x && x.PositionX < start_x + sub_part_x &&
+                    x.PositionZ >= start_z && x.PositionZ < start_z + sub_part_z
+                    ))
+                    {
+                        map[square.PositionX - start_x, square.PositionZ - start_z] = square;
+                    }
+
+                    result.Add(map);
                 }
             }
 
-            return map;
+            return result;
         }
 
-        private bool DoesBrickFitOnMap(SquareTypes current_type, SquareTypes[,] map, int start_x, int start_z,
+        private bool DoesBrickFitOnMap(SquareTypes current_type, MapSquare[,] map, int start_x, int start_z,
             int size_x, int size_z)
         {
             if (map.GetLength(0) < (start_x + size_x))
@@ -96,7 +117,7 @@ namespace BrickMapMaker
             {
                 for (int x = start_x; x < (start_x + size_x); x++)
                 {
-                    if (map[x, z] != current_type)
+                    if (map[x, z].Type != current_type)
                         return false;
                 }
             }
@@ -104,14 +125,14 @@ namespace BrickMapMaker
             return true;
         }
 
-        private void ClearAreaOfMap(SquareTypes[,] map, int start_x, int start_z,
+        private void ClearAreaOfMap(MapSquare[,] map, int start_x, int start_z,
             int size_x, int size_z)
         {
             for (int z = start_z; z < (start_z + size_z); z++)
             {
                 for (int x = start_x; x < (start_x + size_x); x++)
                 {
-                    map[x, z] = SquareTypes.Ignore;
+                    map[x, z].Type = SquareTypes.Ignore;
                 }
             }
         }

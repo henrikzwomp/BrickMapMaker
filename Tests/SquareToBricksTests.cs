@@ -15,10 +15,12 @@ namespace Tests
         [Test]
         public void CanParseList()
         {
-            var input_list = new List<SquareTypes>()
+            var input_list = new List<MapSquare>()
             {
-                SquareTypes.Forest, SquareTypes.Forest,
-                SquareTypes.Forest, SquareTypes.Forest,
+                new MapSquare() { Type = SquareTypes.Forest, PositionX = 0, PositionZ = 0 },
+                new MapSquare() { Type = SquareTypes.Forest, PositionX = 0, PositionZ = 1 },
+                new MapSquare() { Type = SquareTypes.Forest, PositionX = 1, PositionZ = 0 },
+                new MapSquare() { Type = SquareTypes.Forest, PositionX = 1, PositionZ = 1 },
             };
 
             var brick_repo = new Mock<IBrickRepo>();
@@ -27,10 +29,10 @@ namespace Tests
                 new List<DesignItem>() { new DesignItem() { SizeX = 2, SizeZ = 2 } });
 
             brick_repo.Setup(x => x.GetBrick(It.IsAny<DesignItem>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<float>(), It.IsAny<float>()))
-                .Returns(new Brick(""));
+                .Returns(new Brick(0, ""));
 
             var s2b = new SquaresToBrickMaps(brick_repo.Object);
-            var result = s2b.ParseList(2, 2, input_list);
+            var result = s2b.ParseList(2, 2, 10, 10, input_list);
 
             Assert.That(result.Count, Is.EqualTo(1));
         }

@@ -20,15 +20,19 @@ namespace BrickMapMaker
     {
         private string _xml;
 
-        public Brick(string xml)
+        public Brick(int ref_id, string xml)
         {
             _xml = xml;
+            RefId = ref_id;
         }
 
         public string ToXml()
         {
             return _xml;
         }
+
+        public int GroupId { get; set; }
+        public int RefId { get; }
     }
 
     public class BrickRepo : IBrickRepo
@@ -183,7 +187,7 @@ namespace BrickMapMaker
                 ,  ref_id, material_id, transform, designitem.DesignID
             );
 
-            return new Brick(xml);
+            return new Brick(ref_id, xml);
         }
     }
 

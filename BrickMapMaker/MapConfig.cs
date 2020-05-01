@@ -55,8 +55,10 @@ namespace BrickMapMaker
 
     class MapConfig
     {
-        public static SquareTypes GetSquareType(SquareTypes square_type, InputSquareData square)
+        public static SquareTypes GetSquareType(InputSquareData square)
         {
+            SquareTypes square_type = SquareTypes.Land;
+
             if (square.Forest == 0 && square.Land == 0 && square.Marsh == 0
                                 && square.Mountain == 0 && square.Road == 0 && square.Water > 0)
                 square_type = SquareTypes.Sea;
