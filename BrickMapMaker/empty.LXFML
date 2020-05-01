@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<LXFML versionMajor="5" versionMinor="0" name="IMAGE100">
+  <Meta>
+    <Application name="LEGO Digital Designer" versionMajor="4" versionMinor="3"/>
+    <Brand name="LDD"/>
+    <BrickSet version="2670"/>
+  </Meta>
+  <Cameras>
+    <Camera refID="0" fieldOfView="80" distance="69.282875061035156" transformation="0.69282454252243042,0,-0.72110623121261597,-0.53699088096618652,0.66742557287216187,-0.51593017578125,0.48128485679626465,0.74467641115188599,0.46240893006324768,33.344779968261719,51.593330383300781,32.037010192871094"/>
+  </Cameras>
+  <Bricks cameraRef="0">
+[Bricks Here]
+  </Bricks>
+  <RigidSystems>
+  </RigidSystems>
+  <GroupSystems>
+    <GroupSystem>
+    </GroupSystem>
+  </GroupSystems>
+  <BuildingInstructions>
+  </BuildingInstructions>
+</LXFML>

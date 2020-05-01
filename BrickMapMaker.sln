@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrickMapMaker", "BrickMapMaker\BrickMapMaker.csproj", "{B13A74D3-6EF4-472D-8B53-5A5503FBA3DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{FB176271-39AE-46CC-B91E-184FD1D3F9C7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B13A74D3-6EF4-472D-8B53-5A5503FBA3DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B13A74D3-6EF4-472D-8B53-5A5503FBA3DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B13A74D3-6EF4-472D-8B53-5A5503FBA3DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B13A74D3-6EF4-472D-8B53-5A5503FBA3DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB176271-39AE-46CC-B91E-184FD1D3F9C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB176271-39AE-46CC-B91E-184FD1D3F9C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB176271-39AE-46CC-B91E-184FD1D3F9C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB176271-39AE-46CC-B91E-184FD1D3F9C7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {41BDA548-FC20-40FF-BFD3-386932C4F355}
+	EndGlobalSection
+EndGlobal
