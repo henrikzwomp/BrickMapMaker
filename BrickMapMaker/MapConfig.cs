@@ -18,7 +18,19 @@ namespace BrickMapMaker
 
     public enum SquareTypes
     {
-        Mountain, Forest, Marsh, Water, Land, Sea, Road, Ignore
+        Mountain, 
+        Forest, 
+        Marsh, 
+        Water, 
+        Land, 
+        Sea, 
+        Road, 
+        Ignore,
+        DarkForest,
+        OldForest,
+        YellowForest,
+        GrassLand,
+        DarkMountain,
     }
 
     public class MapConfig
@@ -34,10 +46,31 @@ namespace BrickMapMaker
             {
                 new SquareConfiguration()
                 {
+                    Type = SquareTypes.DarkForest,
+                    InputColor = Color.FromArgb(127, 0, 0),
+                    OutputColor = Color.FromArgb(114, 0, 18), // Dark Red, 141
+                    MaterialId = 154,
+                },
+                new SquareConfiguration()
+                {
+                    Type = SquareTypes.DarkMountain,
+                    InputColor = Color.FromArgb(128, 128, 128),
+                    OutputColor = Color.FromArgb(126, 156, 149), // Dark Gray, 199
+                    MaterialId = 199,
+                },
+                new SquareConfiguration()
+                {
                     Type = SquareTypes.Forest,
                     InputColor = Color.FromArgb(116, 164, 92),
                     OutputColor = Color.FromArgb(0, 69, 26), // DarkGreen, 141
                     MaterialId = 141, 
+                },
+                new SquareConfiguration()
+                {
+                    Type = SquareTypes.GrassLand,
+                    InputColor = Color.FromArgb(45, 255, 45),
+                    OutputColor = Color.FromArgb(88, 171, 65), // Bright Green
+                    MaterialId = 37,
                 },
                 new SquareConfiguration()
                 {
@@ -62,6 +95,13 @@ namespace BrickMapMaker
                 },
                 new SquareConfiguration()
                 {
+                    Type = SquareTypes.OldForest,
+                    InputColor = Color.FromArgb(59, 91, 43),
+                    OutputColor = Color.FromArgb(135, 128, 76), // Olive Green, 330
+                    MaterialId = 330,
+                },
+                new SquareConfiguration()
+                {
                     Type = SquareTypes.Road,
                     InputColor = Color.FromArgb(212, 164, 92),
                     OutputColor = Color.FromArgb(160, 140, 114), // DarkTan, 138
@@ -72,13 +112,20 @@ namespace BrickMapMaker
                     Type = SquareTypes.Sea,
                     OutputColor = Color.FromArgb(25, 50, 90), // DarkBlue, 140
                     MaterialId = 140, 
-        },
+                },
                 new SquareConfiguration()
                 {
                     Type = SquareTypes.Water,
                     InputColor = Color.FromArgb(76, 164, 212),
                     OutputColor = Color.FromArgb(0, 85, 191), // Blue, 23
                     MaterialId = 23,
+                },
+                new SquareConfiguration()
+                {
+                    Type = SquareTypes.YellowForest,
+                    InputColor = Color.FromArgb(255, 216, 0),
+                    OutputColor = Color.FromArgb(252, 172, 0), // Flame Yellowing Orange, 191
+                    MaterialId = 191,
                 },
             };
 
@@ -98,30 +145,23 @@ namespace BrickMapMaker
 
         public static SquareTypes CalculateSquareType(IList<SquareConfiguration> square_configs)
         {
-            int forest_count = square_configs.First(x => x.Type == SquareTypes.Forest).Count;
-            int land_count = square_configs.First(x => x.Type == SquareTypes.Land).Count;
-            int marsh_count = square_configs.First(x => x.Type == SquareTypes.Marsh).Count;
-            int mountain_count = square_configs.First(x => x.Type == SquareTypes.Mountain).Count;
+            if (!square_configs.Any(x => x.Count > 0))
+                return SquareTypes.Land;
+
             int road_count = square_configs.First(x => x.Type == SquareTypes.Road).Count;
             int water_count = square_configs.First(x => x.Type == SquareTypes.Water).Count;
+            int non_water_count = square_configs.Count(x => x.Type != SquareTypes.Water && x.Count > 0);
 
-            SquareTypes square_type = SquareTypes.Land;
+            if (non_water_count == 0 && water_count > 0)
+                return SquareTypes.Sea;
 
-            if (forest_count == 0 && land_count == 0 && marsh_count == 0
-                                && mountain_count == 0 && road_count == 0 && water_count > 0)
-                square_type = SquareTypes.Sea;
-            else if (road_count > 0)
-                square_type = SquareTypes.Road;
+            if (road_count > 0)
+                return SquareTypes.Road;
+            
             else if (water_count > 0)
-                square_type = SquareTypes.Water;
-            else if (mountain_count > land_count && mountain_count > forest_count
-                && mountain_count > marsh_count)
-                square_type = SquareTypes.Mountain;
-            else if (forest_count > land_count && forest_count > marsh_count)
-                square_type = SquareTypes.Forest;
-            else if (marsh_count > land_count)
-                square_type = SquareTypes.Marsh;
-            return square_type;
+                return SquareTypes.Water;
+
+            return square_configs.OrderByDescending(x => x.Count).First().Type;
         }
     }
 

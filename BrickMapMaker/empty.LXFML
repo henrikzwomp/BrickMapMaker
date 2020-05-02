@@ -2,7 +2,7 @@
 <LXFML versionMajor="5" versionMinor="0" name="IMAGE100">
   <Meta>
     <Application name="LEGO Digital Designer" versionMajor="4" versionMinor="3"/>
-    <Brand name="LDD"/>
+    <Brand name="LDDExtended"/>
     <BrickSet version="2670"/>
   </Meta>
   <Cameras>
