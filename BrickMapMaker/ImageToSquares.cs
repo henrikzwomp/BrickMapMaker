@@ -20,7 +20,7 @@ namespace BrickMapMaker
             var squaresX = bitmap.Width / square_size;
             var squaresZ = bitmap.Height / square_size;
 
-            var ic = new InputColors();
+            var configs = MapConfig.GetSquareConfigurations();
             Color pixel;
 
             var result = new List<MapSquare>();
@@ -29,33 +29,28 @@ namespace BrickMapMaker
             {
                 for (var sx = 0; sx < squaresX; sx++)
                 {
-                    var square_result = new InputSquareData();
-
                     for (var py = 0; py < square_size; py++)
                     {
                         for (var px = 0; px < square_size; px++)
                         {
                             pixel = bitmap.GetPixel((sx * square_size) + px, (sz * square_size) + py);
 
-                            if (pixel == ic.Mountain)
-                                square_result.Mountain++;
-                            else if (pixel == ic.Forest)
-                                square_result.Forest++;
-                            else if (pixel == ic.Marsh)
-                                square_result.Marsh++;
-                            else if (pixel == ic.Water)
-                                square_result.Water++;
-                            else if (pixel == ic.Land)
-                                square_result.Land++;
-                            else if (pixel == ic.Road)
-                                square_result.Road++;
+                            var square_config = configs.FirstOrDefault(x => x.InputColor == pixel);
+
+                            if (square_config == null)
+                                continue;
+
+                            square_config.Count++;
                         }
                     }
 
                     var map_square = new MapSquare() { 
-                        Type = MapConfig.GetSquareType(square_result), 
+                        Type = MapConfig.CalculateSquareType(configs), 
                         PositionX = sx, PositionZ = sz 
                     };
+
+                    MapConfig.ResetCount();
+
                     result.Add(map_square);
                 }
             }
