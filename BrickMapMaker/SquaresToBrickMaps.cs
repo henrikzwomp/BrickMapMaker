@@ -26,12 +26,16 @@ namespace BrickMapMaker
             var ref_counter = 0;
             var group_counter = 0;
 
+            var square_configs = MapConfig.GetSquareConfigurations();
 
             foreach(var map in maps)
             {
                 foreach (SquareTypes current_type in (SquareTypes[])Enum.GetValues(typeof(SquareTypes)))
                 {
-                    var material_id = MapConfig.GetMaterialId(current_type);
+                    if (current_type == SquareTypes.Ignore)
+                        continue;
+
+                    var material_id = square_configs.First(x => x.Type ==  current_type).MaterialId;
 
                     var brick_designs = _brick_repo.GetBrickSizesForMaterialId(material_id);
 

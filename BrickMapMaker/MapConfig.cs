@@ -21,18 +21,6 @@ namespace BrickMapMaker
         Mountain, Forest, Marsh, Water, Land, Sea, Road, Ignore
     }
 
-    [Obsolete]
-    public class OutputColors
-    {
-        public Color Lbg = Color.FromArgb(160, 165, 169); // 194
-        public Color DarkGreen = Color.FromArgb(0, 69, 26); // 141
-        public Color SandGreen = Color.FromArgb(112, 142, 124); // 151
-        public Color Blue = Color.FromArgb(0, 85, 191); // 23
-        public Color Green = Color.FromArgb(0, 133, 43); // 28
-        public Color DarkBlue = Color.FromArgb(25, 50, 90); // 140
-        public Color DarkTan = Color.FromArgb(160, 140, 114); // 138
-    }
-
     public class MapConfig
     {
         static IList<SquareConfiguration> _configs;
@@ -48,35 +36,49 @@ namespace BrickMapMaker
                 {
                     Type = SquareTypes.Forest,
                     InputColor = Color.FromArgb(116, 164, 92),
+                    OutputColor = Color.FromArgb(0, 69, 26), // DarkGreen, 141
+                    MaterialId = 141, 
                 },
                 new SquareConfiguration()
                 {
                     Type = SquareTypes.Land,
                     InputColor = Color.FromArgb(188, 228, 180),
+                    OutputColor = Color.FromArgb(0, 133, 43), // Green, 28
+                    MaterialId = 28, 
                 },
                 new SquareConfiguration()
                 {
                     Type = SquareTypes.Marsh,
                     InputColor = Color.FromArgb(156, 196, 148),
+                    OutputColor = Color.FromArgb(112, 142, 124),  //SandGreen, 151
+                    MaterialId = 151, 
                 },
                 new SquareConfiguration()
                 {
                     Type = SquareTypes.Mountain,
                     InputColor = Color.FromArgb(172, 172, 172),
+                    OutputColor = Color.FromArgb(160, 165, 169), // Lbg, 194
+                    MaterialId = 194, 
                 },
                 new SquareConfiguration()
                 {
                     Type = SquareTypes.Road,
                     InputColor = Color.FromArgb(212, 164, 92),
+                    OutputColor = Color.FromArgb(160, 140, 114), // DarkTan, 138
+                    MaterialId = 138,
                 },
                 new SquareConfiguration()
                 {
-                    Type = SquareTypes.Sea
-                },
+                    Type = SquareTypes.Sea,
+                    OutputColor = Color.FromArgb(25, 50, 90), // DarkBlue, 140
+                    MaterialId = 140, 
+        },
                 new SquareConfiguration()
                 {
                     Type = SquareTypes.Water,
                     InputColor = Color.FromArgb(76, 164, 212),
+                    OutputColor = Color.FromArgb(0, 85, 191), // Blue, 23
+                    MaterialId = 23,
                 },
             };
 
@@ -120,48 +122,6 @@ namespace BrickMapMaker
             else if (marsh_count > land_count)
                 square_type = SquareTypes.Marsh;
             return square_type;
-        }
-
-        [Obsolete]
-        public static int GetMaterialId(SquareTypes square_type)
-        {
-            var color = 21;
-
-            if (square_type == SquareTypes.Forest)
-                color = 141;
-            else if (square_type == SquareTypes.Land)
-                color = 28;
-            else if (square_type == SquareTypes.Marsh)
-                color = 151;
-            else if (square_type == SquareTypes.Mountain)
-                color = 194;
-            else if (square_type == SquareTypes.Sea)
-                color = 140;
-            else if (square_type == SquareTypes.Water)
-                color = 23;
-            else if (square_type == SquareTypes.Road)
-                color = 138;
-
-            return color;
-        }
-
-        [Obsolete]
-        public static Color GetOutputColor(OutputColors oc, SquareTypes square)
-        {
-            if (square == SquareTypes.Sea)
-                return oc.DarkBlue;
-            else if (square == SquareTypes.Water)
-                return oc.Blue;
-            else if (square == SquareTypes.Mountain)
-                return oc.Lbg;
-            else if (square == SquareTypes.Forest)
-                return oc.DarkGreen;
-            else if (square == SquareTypes.Marsh)
-                return oc.SandGreen;
-            else if (square == SquareTypes.Road)
-                return oc.DarkTan;
-
-            return oc.Green;
         }
     }
 
