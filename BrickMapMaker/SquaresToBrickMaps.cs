@@ -33,9 +33,9 @@ namespace BrickMapMaker
                 {
                     var material_id = MapConfig.GetMaterialId(current_type);
 
-                    var brick_sizes = _brick_repo.GetBrickSizesForMaterialId(material_id);
+                    var brick_designs = _brick_repo.GetBrickSizesForMaterialId(material_id);
 
-                    foreach (var brick_size in brick_sizes)
+                    foreach (var brick_design in brick_designs)
                     {
                         for (int z = 0; z < map.GetLength(1); z++)
                         {
@@ -49,15 +49,18 @@ namespace BrickMapMaker
                                 if (map_square.Type != current_type)
                                     continue;
 
-                                if (DoesBrickFitOnMap(current_type, map, x, z, brick_size.SizeX, brick_size.SizeZ))
+                                if(_brick_repo.IfBrickMaxUsageHasBeenReached(material_id, brick_design.DesignID))
+                                    continue;
+
+                                if (DoesBrickFitOnMap(current_type, map, x, z, brick_design.SizeX, brick_design.SizeZ))
                                 {
-                                    var new_brick = _brick_repo.GetBrick(brick_size, material_id, ref_counter, map_square.PositionX, map_square.PositionZ);
+                                    var new_brick = _brick_repo.GetBrick(brick_design, material_id, ref_counter, map_square.PositionX, map_square.PositionZ);
                                     new_brick.GroupId = group_counter;
                                     ref_counter++;
 
                                     result.Add(new_brick);
 
-                                    ClearAreaOfMap(map, x, z, brick_size.SizeX, brick_size.SizeZ);
+                                    ClearAreaOfMap(map, x, z, brick_design.SizeX, brick_design.SizeZ);
                                 }
                             }
                         }

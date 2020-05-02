@@ -68,5 +68,32 @@ namespace Tests
 
             Assert.That(brick.ToXml(), Is.EqualTo("<Brick refID=\"399\" designID=\"3030\"><Part refID=\"399\" designID=\"3030\" materials=\"28\"><Bone refID=\"399\" transformation=\"1,0,0,0,1,0,0,0,1,0.4,0,2.8\"></Bone></Part></Brick>"));
         }
+
+        [Test]
+        public void CanCheckIfBrickMaxUsageHasBeenReached()
+        {
+            var repo = new BrickRepo(TestHelper.AssemblyDirectory + "BrickRepoTests_BrickList01.xlsx");
+
+            var size = new DesignItem() { DesignID = 3023, Transform = "" };
+
+            Assert.That(repo.IfBrickMaxUsageHasBeenReached(28, size.DesignID), Is.False);
+
+            repo.GetBrick(size, 28, 399, 0, 0);
+
+            Assert.That(repo.IfBrickMaxUsageHasBeenReached(28, size.DesignID), Is.True);
+        }
+
+        [Test]
+        public void WillUseColorWhenCheckingIfBrickMaxUsageHasBeenReached()
+        {
+            var repo = new BrickRepo(TestHelper.AssemblyDirectory + "BrickRepoTests_BrickList01.xlsx");
+
+            var size = new DesignItem() { DesignID = 3023, Transform = "" };
+
+            var non_existing_color = 4444;
+
+            Assert.That(repo.IfBrickMaxUsageHasBeenReached(non_existing_color, size.DesignID), Is.True);
+
+        }
     }
 }

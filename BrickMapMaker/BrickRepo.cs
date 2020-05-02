@@ -14,6 +14,7 @@ namespace BrickMapMaker
     {
         IList<DesignItem> GetBrickSizesForMaterialId(int  material_id);
         Brick GetBrick(DesignItem designitem, int material_id, int ref_id, float x_pos, float z_pos);
+        bool IfBrickMaxUsageHasBeenReached(int material_id, int designID);
     }
 
     public class Brick
@@ -179,6 +180,11 @@ namespace BrickMapMaker
 
         public Brick GetBrick(DesignItem designitem, int material_id, int ref_id, float x_pos, float z_pos)
         {
+            foreach(var element in _elements.Where(x => x.DesignAndOrientations.Any(y => y.DesignID == designitem.DesignID)))
+            {
+                element.MaxUsage--;
+            }
+
             var transform = string.Format(designitem.Transform,
                 ((x_pos * 0.8f) + designitem.OffsetX).ToString().Replace(",", "."),
                 ((z_pos * 0.8f) + designitem.OffsetZ).ToString().Replace(",", "."));
@@ -188,6 +194,17 @@ namespace BrickMapMaker
             );
 
             return new Brick(ref_id, xml);
+        }
+
+        public bool IfBrickMaxUsageHasBeenReached(int material_id, int designID)
+        {
+            var element = _elements.FirstOrDefault(x => x.MaterialID == material_id && 
+                x.DesignAndOrientations.Any(y => y.DesignID == designID));
+
+            if (element == null)
+                return true;
+            
+            return (element.MaxUsage <= 0);
         }
     }
 

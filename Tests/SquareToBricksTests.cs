@@ -37,5 +37,26 @@ namespace Tests
             Assert.That(result.Count, Is.EqualTo(1));
         }
 
+        [Test]
+        public void WillUseMaxUsageValueWhenCreatingBrickMap()
+        {
+            var input_list = new List<MapSquare>()
+            {
+                new MapSquare() { Type = SquareTypes.Land, PositionX = 0, PositionZ = 0 },
+                new MapSquare() { Type = SquareTypes.Land, PositionX = 0, PositionZ = 1 },
+                new MapSquare() { Type = SquareTypes.Land, PositionX = 1, PositionZ = 0 },
+                new MapSquare() { Type = SquareTypes.Land, PositionX = 1, PositionZ = 1 },
+            };
+
+            var brick_repo = new BrickRepo(TestHelper.AssemblyDirectory + "BrickRepoTests_BrickList01.xlsx");
+
+            var s2b = new SquaresToBrickMaps(brick_repo);
+            var result = s2b.ParseList(2, 2, 10, 10, input_list);
+
+            Assert.That(result.Count, Is.EqualTo(3));
+            Assert.That(result.Count(x => x.ToXml().Contains("3023")), Is.EqualTo(1));
+            Assert.That(result.Count(x => x.ToXml().Contains("3024")), Is.EqualTo(2));
+        }
+
     }
 }
