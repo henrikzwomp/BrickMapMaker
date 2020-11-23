@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using DocumentFormat.OpenXml.Office2010.Drawing;
 
 namespace BrickMapMaker
 {
@@ -117,9 +118,19 @@ namespace BrickMapMaker
                 {
                     Type = SquareTypes.Water,
                     InputColor = Color.FromArgb(76, 164, 212),
+                    OutputColor = Color.FromArgb(7, 139, 201), // Dark Azure, 321
+                    MaterialId = 321,
+                },
+                /*
+                 // Bright blue
+                 new SquareConfiguration()
+                {
+                    Type = SquareTypes.Water,
+                    InputColor = Color.FromArgb(76, 164, 212),
                     OutputColor = Color.FromArgb(0, 85, 191), // Blue, 23
                     MaterialId = 23,
                 },
+                 */
                 new SquareConfiguration()
                 {
                     Type = SquareTypes.YellowForest,
@@ -155,6 +166,14 @@ namespace BrickMapMaker
             if (non_water_count == 0 && water_count > 0)
                 return SquareTypes.Sea;
 
+            if (road_count > 0 && water_count > 0)
+            {
+                if(road_count > water_count)
+                    return SquareTypes.Road;
+
+                return SquareTypes.Water;
+            }
+
             if (road_count > 0)
                 return SquareTypes.Road;
             
@@ -165,4 +184,62 @@ namespace BrickMapMaker
         }
     }
 
+    public class BrickRiverPartSelector : IBrickRiverPartSelector
+    {
+        public DesignItem GetBottomLeftCornerPart()
+        {
+            return new DesignItem()
+            {
+                BricklinkName = "Tile, Round 1 x 1 Quarter",
+                DesignID = 25269,
+                OffsetX = 0.4f,
+                OffsetZ = 0.4f,
+                SizeX = 1,
+                SizeZ = 1,
+                Transform = "1,0,0,0,1,0,0,0,1,{0},0,{1}"
+            };
+        }
+
+        public DesignItem GetBottomRightCornerPart()
+        {
+            return new DesignItem()
+            {
+                BricklinkName = "Tile, Round 1 x 1 Quarter",
+                DesignID = 25269,
+                OffsetX = 0.4f,
+                OffsetZ = 0.4f,
+                SizeX = 1,
+                SizeZ = 1,
+                Transform = "0,0,-1,0,1,0,1,0,0,{0},0,{1}"
+            };
+        }
+
+        public DesignItem GetTopLeftCornerPart()
+        {
+            return new DesignItem()
+            {
+                BricklinkName = "Tile, Round 1 x 1 Quarter",
+                DesignID = 25269,
+                OffsetX = 0.4f,
+                OffsetZ = 0.4f,
+                SizeX = 1,
+                SizeZ = 1,
+                Transform = "0,0,1,0,1,0,-1,0,0,{0},0,{1}"
+            };
+        }
+
+        public DesignItem GetTopRightCornerPart()
+        {
+            return new DesignItem()
+            {
+                BricklinkName = "Tile, Round 1 x 1 Quarter",
+                DesignID = 25269,
+                OffsetX = 0.4f,
+                OffsetZ = 0.4f,
+                SizeX = 1,
+                SizeZ = 1,
+                Transform = "-1,0,0,0,1,0,0,0,-1,{0},0,{1}"
+            };
+        }
+    }
 }

@@ -19,17 +19,32 @@ namespace BrickMapMaker
             int sub_part_max_x, int sub_part_max_z,
             List<MapSquare> map_squares)
         {
+            var rm = new RiverMaker(_brick_repo, new BrickRiverPartSelector());
+
             var result = new List<Brick>();
 
-            var maps = CreateMapsFromInput(squaresX, squaresZ, sub_part_max_x, sub_part_max_z, map_squares);
+            var big_map = CreateMapFromInput(squaresX, squaresZ, map_squares);
 
-            var ref_counter = 0;
+            // ToDo Fix coasts.
+
             var group_counter = 0;
+
+            CoastFixer.Go(big_map);
+
+            rm.CreateBrickRivers(big_map, group_counter, result);
+
+            //var maps = CreateMapsFromInput(squaresX, squaresZ, sub_part_max_x, sub_part_max_z, map_squares);
+            var maps = SplitMap(big_map, sub_part_max_x, sub_part_max_z);
+
+            var ref_counter = result.Count;
+            group_counter++;
+
 
             var square_configs = MapConfig.GetSquareConfigurations();
 
             foreach(var map in maps)
             {
+
                 foreach (SquareTypes current_type in (SquareTypes[])Enum.GetValues(typeof(SquareTypes)))
                 {
                     if (current_type == SquareTypes.Ignore)
@@ -105,6 +120,69 @@ namespace BrickMapMaker
                     }
 
                     result.Add(map);
+                }
+            }
+
+            return result;
+        }
+
+        private MapSquare[,] CreateMapFromInput(int squares_x, int squares_z, List<MapSquare> map_squares)
+        {
+            var result = new MapSquare[squares_x, squares_z];
+
+            for (var start_x = 0; start_x < squares_x; start_x++)
+            {
+                for (var start_z = 0; start_z < squares_z; start_z++)
+                {
+                    result[start_x, start_z] = map_squares[start_x + (squares_x * start_z)];
+                }
+            }
+
+            return result;
+        }
+
+        private List<MapSquare[,]> SplitMap(MapSquare[,] map, int sub_part_max_x, int sub_part_max_z)
+        {
+            var squares_x = map.GetLength(0);
+            var squares_z = map.GetLength(1);
+
+            var map_squares = new List<MapSquare>();
+            for (int z = 0; z < map.GetLength(1); z++)
+            {
+                for (int x = 0; x < map.GetLength(0); x++)
+                {
+                    map_squares.Add(map[x, z]);
+                }
+            }
+
+
+
+            var result = new List<MapSquare[,]>();
+
+            for (var start_x = 0; start_x < squares_x; start_x += sub_part_max_x)
+            {
+                for (var start_z = 0; start_z < squares_z; start_z += sub_part_max_z)
+                {
+                    var sub_part_x = sub_part_max_x;
+                    var sub_part_z = sub_part_max_z;
+
+                    if (start_x + sub_part_x > squares_x)
+                        sub_part_x = squares_x - start_x;
+
+                    if (start_z + sub_part_z > squares_z)
+                        sub_part_z = squares_z - start_z;
+
+                    var sub_map = new MapSquare[sub_part_x, sub_part_z];
+
+                    foreach (var square in map_squares.Where(x =>
+                    x.PositionX >= start_x && x.PositionX < start_x + sub_part_x &&
+                    x.PositionZ >= start_z && x.PositionZ < start_z + sub_part_z
+                    ))
+                    {
+                        sub_map[square.PositionX - start_x, square.PositionZ - start_z] = square;
+                    }
+
+                    result.Add(sub_map);
                 }
             }
 

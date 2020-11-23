@@ -55,11 +55,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BrickRepo.cs" />
+    <Compile Include="CoastFixer.cs" />
     <Compile Include="ExcelFileReader.cs" />
     <Compile Include="ImageToSquares.cs" />
     <Compile Include="MapConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RiverMaker.cs" />
     <Compile Include="SquaresToImage.cs" />
     <Compile Include="SquaresToBrickMaps.cs" />
   </ItemGroup>
